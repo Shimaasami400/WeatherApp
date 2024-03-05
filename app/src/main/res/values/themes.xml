@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WeatherApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/purple</item>
+        <item name="colorSecondary">@color/rose</item>
+        <item name="android:statusBarColor">@color/purple</item>
+    </style>
+
+    <style name="Theme.WeatherApp" parent="Base.Theme.WeatherApp" />
+
+    <style name="CustomToolbarTitle" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">casual</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="MenuTextStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:fontFamily">casual</item>
+    </style>
+
+</resources>
