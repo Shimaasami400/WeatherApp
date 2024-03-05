@@ -2,12 +2,14 @@ package com.example.weatherapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.example.weatherapp.databinding.ActivityMainBinding
+import com.example.weatherapp.home.view.HomeFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -49,6 +51,17 @@ class MainActivity : AppCompatActivity() {
             }
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             true
+        }
+
+        // Check if a location is passed from MapActivity
+        val latitude = intent.getDoubleExtra("latitude", 0.0)
+        val longitude = intent.getDoubleExtra("longitude", 0.0)
+        // Log the received latitude and longitude
+        Log.i("MainActivity", "Received latitude: $latitude, longitude: $longitude")
+        if (latitude != 0.0 && longitude != 0.0) {
+            // Pass the selected location to the HomeFragment
+            val homeFragment = HomeFragment.newInstance(latitude, longitude,true)
+            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, homeFragment).commit()
         }
     }
 

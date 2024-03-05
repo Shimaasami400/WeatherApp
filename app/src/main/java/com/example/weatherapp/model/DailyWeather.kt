@@ -8,7 +8,8 @@ data class DailyWeather(
     val dayOfWeek: String,
     val date: String,
     val maxTemperature: Double,
-    val minTemperature: Double
+    val minTemperature: Double,
+    val weatherDescription: String
 )
 
 fun convertToDailyWeather(dailyItems: List<DailyItem>): List<DailyWeather> {
@@ -19,8 +20,9 @@ fun convertToDailyWeather(dailyItems: List<DailyItem>): List<DailyWeather> {
         val date = getDate(dailyItem.dt)
         val maxTemperature = dailyItem.temp.max
         val minTemperature = dailyItem.temp.min
+        val weatherDescription = dailyItem.weather.firstOrNull()?.description ?: ""
 
-        val dailyWeather = DailyWeather(dayOfWeek, date, maxTemperature, minTemperature)
+        val dailyWeather = DailyWeather(dayOfWeek, date, maxTemperature, minTemperature, weatherDescription)
         dailyWeatherList.add(dailyWeather)
     }
 
