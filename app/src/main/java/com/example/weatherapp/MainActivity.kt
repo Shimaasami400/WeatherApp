@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.settingFragment)
                 }
             }
+            //to close the drawer after choosing an item
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
@@ -61,7 +62,14 @@ class MainActivity : AppCompatActivity() {
         if (latitude != 0.0 && longitude != 0.0) {
             // Pass the selected location to the HomeFragment
             val homeFragment = HomeFragment.newInstance(latitude, longitude,true)
-            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, homeFragment).commit()
+
+            val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
+            navController.navigate(R.id.homeFragment, Bundle().apply {
+                putDouble("latitude", latitude)
+                putDouble("longitude", longitude)
+                putBoolean("isLocationFromMapActivity", true)
+            })
+
         }
     }
 

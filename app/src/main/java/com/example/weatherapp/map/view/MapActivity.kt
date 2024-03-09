@@ -17,23 +17,20 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-const val PERMISSION_ID = 1001
+const val PERMISSION_ID = 1010
 class MapActivity : AppCompatActivity() , OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapBinding
     private val viewModel: MapsViewModel by viewModels()
+    var lat = 0.0
+    val lng =0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        if (checkPermissions()) {
             setupMap()
-        } else {
-            requestPermissions()
-        }
     }
 
     private fun setupMap() {
@@ -57,7 +54,6 @@ class MapActivity : AppCompatActivity() , OnMapReadyCallback {
                     "Permission denied, cannot access location.",
                     Toast.LENGTH_SHORT
                 ).show()
-                finish() // Finish the activity if permission is denied
             }
         }
     }
@@ -87,6 +83,7 @@ class MapActivity : AppCompatActivity() , OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setOnMapClickListener { latLng ->
+
             map.clear()
             map.addMarker(MarkerOptions().position(latLng))
             viewModel.setLocation(latLng)
@@ -105,7 +102,6 @@ class MapActivity : AppCompatActivity() , OnMapReadyCallback {
             putExtra("longitude", longitude)
         }
         startActivity(intent)
-        finish()
     }
 }
 

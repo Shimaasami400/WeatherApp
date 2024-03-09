@@ -41,10 +41,15 @@ class DayAdapter : ListAdapter<DailyWeather, DayAdapter.DayViewHolder>(DiffCallb
         private fun getWeatherIcon(weatherDescription: String): Int {
             return when (weatherDescription.toLowerCase()) {
                 "sunny" -> R.drawable.sunny
-                "clear sky" -> R.drawable.storm
+                "thunderstorm" -> R.drawable.storm
+                "few clouds" -> R.drawable.cloudy
                 "scattered clouds" -> R.drawable.cloudy
-                "rainy" -> R.drawable.rain
-                else -> R.drawable.snow
+                "broken clouds" -> R.drawable.cloudy
+                "light rain" -> R.drawable.rain
+                "moderate rain" -> R.drawable.rain
+                "snow" -> R.drawable.snow
+                "mist" -> R.drawable.mist
+                else -> R.drawable.clear_sky
             }
         }
     }

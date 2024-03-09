@@ -7,4 +7,5 @@
     <string name="fav">Favorite</string>
     <string name="alert">Alerts\n</string>
     <string name="setting">Settings</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
