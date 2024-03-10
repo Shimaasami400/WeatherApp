@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentHomeBinding
@@ -43,6 +44,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -57,7 +59,6 @@ class HomeFragment : Fragment() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var sharedPreferences: SharedPreferences
 
-    private val mapsViewModel: MapsViewModel by viewModels()
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(WeatherRepositoryImp.getInstance(WeatherRemoteDataSourceImp.getInstance()))
     }
@@ -96,15 +97,6 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun showGPSDisabledAlert() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("GPS is disabled. Do you want to enable it?")
-            .setCancelable(false)
-            .setPositiveButton("Yes") { _, _ -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
-            .setNegativeButton("No") { dialog, _ -> dialog.cancel() }
-        val alert = builder.create()
-        alert.show()
-    }
 
     private fun showLocationDialog() {
         val items = arrayOf("Use GPS", "Open Map")
@@ -143,7 +135,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun openMap() {
-        startActivity(Intent(requireActivity(), MapActivity::class.java))
+        var tye = "Home"
+        var action :HomeFragmentDirections.ActionHomeFragmentToMapFragment = HomeFragmentDirections.actionHomeFragmentToMapFragment().apply {
+            type = tye
+        }
+        Navigation.findNavController(requireView()).navigate(action)
     }
 
     private val locationCallBack: LocationCallback = object : LocationCallback() {
@@ -152,10 +148,9 @@ class HomeFragment : Fragment() {
                 val lastLocation: Location = locationResult.lastLocation
                 currentLatitude = lastLocation.latitude
                 currentLongitude = lastLocation.longitude
-                viewModel.getWeatherResponse(lastLocation.latitude, lastLocation.longitude)
 
                 Log.i("HomeFragment", "Latitude: $currentLatitude, Longitude: $currentLongitude")
-                lifecycleScope.launch {
+                /*lifecycleScope.launch {
                     viewModel.weather.collectLatest { viewStateResult ->
                         when (viewStateResult) {
                             is ResponseState.Success -> {
@@ -181,28 +176,64 @@ class HomeFragment : Fragment() {
                             }
                         }
                     }
-                }
-
+                }*/
+                setUpUI(LatLng(lastLocation.latitude,lastLocation.longitude))
                 isLocationReceived = true
                 fusedLocationProviderClient.removeLocationUpdates(this)
             }
         }
     }
 
+    fun setUpUI(latLang :LatLng){
+        viewModel.getWeatherResponse(latLang.latitude, latLang.longitude)
+        lifecycleScope.launch {
+            viewModel.weather.collectLatest { viewStateResult ->
+                when (viewStateResult) {
+                    is ResponseState.Success -> {
+                        val weatherResponse = viewStateResult.data
+                        val currentWeather = weatherResponse.current
+
+                        binding.currentWeatherLocation.text = "${weatherResponse.timezone}"
+                        binding.currentWeatherTemperature.text = "${currentWeather.temp} °K"
+                        binding.currentWeatherDescription.text = "${currentWeather.weather.firstOrNull()?.description}"
+                        val weatherIcon = currentWeather.weather.firstOrNull()?.description.toString()
+                        binding.currentWeatherImageView.setImageResource(getWeatherIcon(weatherIcon))
+
+                        val dailyWeather = weatherResponse.daily
+                        val convertedDailyWeather = convertToDailyWeather(dailyWeather)
+                        dayAdapter.submitList(convertedDailyWeather)
+                    }
+
+                    is ResponseState.Loading -> {
+                    }
+
+                    else -> {
+                        Log.i("TAG", "onViewCreated: Something went wrong.")
+                    }
+                }
+            }
+        }
+    }
     override fun onResume() {
         super.onResume()
-//        getLocation()
-        val locationDialogShown = sharedPreferences.getBoolean(LOCATION_DIALOG_SHOWN, false)
-        Log.i("HomeFragment", "Location dialog shown: $locationDialogShown")
-        if (!locationDialogShown) {
-            showLocationDialog()
-            sharedPreferences.edit().putBoolean(LOCATION_DIALOG_SHOWN, true).apply()
-            Log.i("TAG", "onResume: Dialog")
-        } else {
-            val locationMethod = sharedPreferences.getString("Location_Method", "Use GPS")
-                    handleLocationMethod(locationMethod)
-            Log.i("TAG", "onResume: not Dialog")
-
+        val argsLatLng =  HomeFragmentArgs.fromBundle(requireArguments()).latLang
+        if (argsLatLng != null)
+        {
+            setUpUI(LatLng(argsLatLng.lat,argsLatLng.lng))
+            Log.i("TAG", "onResume: ================")
+        }else{
+            val locationDialogShown = sharedPreferences.getBoolean(LOCATION_DIALOG_SHOWN, false)
+            Log.i("HomeFragment", "Location dialog shown: $locationDialogShown")
+            if (!locationDialogShown) {
+                showLocationDialog()
+                sharedPreferences.edit().putBoolean(LOCATION_DIALOG_SHOWN, true).apply()
+                sharedPreferences.edit().putString("Location_Method", "Use GPS").apply()
+                Log.i("TAG", "onResume: Dialog")
+            } else {
+                val locationMethod = sharedPreferences.getString("Location_Method", "Use GPS")
+                handleLocationMethod(locationMethod)
+                Log.i("TAG", "onResume: not Dialog")
+            }
         }
     }
 

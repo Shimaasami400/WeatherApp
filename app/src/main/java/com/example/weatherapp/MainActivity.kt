@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         Log.i("MainActivity", "Received latitude: $latitude, longitude: $longitude")
         if (latitude != 0.0 && longitude != 0.0) {
             // Pass the selected location to the HomeFragment
-            val homeFragment = HomeFragment.newInstance(latitude, longitude,true)
+           // val homeFragment = HomeFragment.newInstance(latitude, longitude,true)
 
             val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
             navController.navigate(R.id.homeFragment, Bundle().apply {

@@ -31,13 +31,13 @@ fun convertToDailyWeather(dailyItems: List<DailyItem>): List<DailyWeather> {
 
 private fun getDayOfWeek(timestamp: Long): String {
     val calendar = Calendar.getInstance()
-    calendar.timeInMillis = timestamp * 1000 // Convert seconds to milliseconds
+    calendar.timeInMillis = timestamp * 1000
     val dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
     return dayOfWeek ?: ""
 }
 
 private fun getDate(timestamp: Long): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val date = Date(timestamp * 1000) // Convert seconds to milliseconds
+    val date = Date(timestamp * 1000)
     return dateFormat.format(date)
 }
