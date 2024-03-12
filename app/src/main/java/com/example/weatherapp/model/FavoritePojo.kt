@@ -1,6 +1,12 @@
 package com.example.weatherapp.model
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Entity(tableName = "fav_sky_watch", primaryKeys = ["lat","lng"])
-data class FavoritePojo (val address:String ,val lat: Double,val lng :Double)
+@Entity(tableName = "favorite")
+data class FavoriteWeather (
+    @PrimaryKey(autoGenerate = true)
+    var roomId:Long =0,
+    val address:String ,
+    val lat: Double,
+    val lng :Double)

@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 
 class WeatherRepositoryImp (
-    var remoteDataSource: WeatherRemoteDataSource,
-):WeatherRepository{
+    private val remoteDataSource: WeatherRemoteDataSource,
+    private val localDataSource: WeatherLocalDataSource
+
+):WeatherRepository , WeatherLocalDataSource{
 
     override suspend fun getWeatherForecast(
         latitude: Double,
@@ -23,24 +25,27 @@ class WeatherRepositoryImp (
         return flowOf(remoteDataSource.getOneCallResponse(latitude, longitude))
     }
 
-    //override fun getCurrentWeather(): Flow<List<WeatherResponse>> {
-
-   // }
-
-    /*override  fun getCurrentWeather(): Flow<WeatherResponse> {
-        return flow {
-            emit(getWeatherForecast(0.0, 0.0))
-        }
-    }*/
 
     companion object {
         private var instance: WeatherRepositoryImp? = null
-        fun getInstance(remoteSource: WeatherRemoteDataSource): WeatherRepositoryImp {
+        fun getInstance(remoteSource: WeatherRemoteDataSource,localSource: WeatherLocalDataSource): WeatherRepositoryImp {
             return instance ?: synchronized(this) {
-                val temp = WeatherRepositoryImp(remoteSource)
-                instance = temp
-                temp
+                instance?: WeatherRepositoryImp(remoteSource,localSource)
+                    .also { instance = it }
             }
         }
     }
+
+    override fun getAllWeather(): Flow<List<FavoriteWeather>> {
+        return localDataSource.getAllWeather()
+    }
+
+    override suspend fun insertWeather(favoriteWeather: FavoriteWeather) {
+        localDataSource.insertWeather(favoriteWeather)
+    }
+
+    override suspend fun deleteWeather(favoriteWeather: FavoriteWeather) {
+        localDataSource.deleteWeather(favoriteWeather)
+    }
+
 }

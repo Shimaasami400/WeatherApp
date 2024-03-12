@@ -27,6 +27,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentHomeBinding
+import com.example.weatherapp.db.DatabaseClient
 import com.example.weatherapp.db.WeatherLocalDataSource
 import com.example.weatherapp.db.WeatherLocalDataSourceImp
 import com.example.weatherapp.home.viewmodel.HomeViewModel
@@ -38,6 +39,7 @@ import com.example.weatherapp.model.WeatherRepositoryImp
 import com.example.weatherapp.model.convertToDailyWeather
 import com.example.weatherapp.model.convertToHourlyWeather
 import com.example.weatherapp.network.ResponseState
+import com.example.weatherapp.network.RetrofitHelper
 import com.example.weatherapp.network.WeatherRemoteDataSourceImp
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -60,7 +62,12 @@ class HomeFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private val viewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory(WeatherRepositoryImp.getInstance(WeatherRemoteDataSourceImp.getInstance()))
+        HomeViewModelFactory(
+            WeatherRepositoryImp.getInstance(
+                WeatherRemoteDataSourceImp.getInstance(RetrofitHelper.weatherApiService),
+                WeatherLocalDataSourceImp.getInstance(DatabaseClient.getInstance(requireContext()).favoriteWeather())
+            )
+        )
     }
     private val dayAdapter = DayAdapter()
     private var currentLatitude: Double = 0.0
@@ -84,19 +91,41 @@ class HomeFragment : Fragment() {
 
         locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+        val args = HomeFragmentArgs.fromBundle(requireArguments())
+        Log.i("HomeFragment", "Received args: ${args.latLang}")
+        val latitude = args.latLang?.lat
+        val longitude = args.latLang?.lng
+        Log.i("HomeFragment", "Received latitude: $latitude, longitude: $longitude")
 
-
-        val isLocationFromMapActivity = arguments?.getBoolean("isLocationFromMapActivity") ?: false
-
-        if (isLocationFromMapActivity) {
-            Log.i("HomeFragment", "Location is from MapActivity")
+        if (latitude != null && longitude != null) {
+            if (!isLocationReceived) {
+                setUpUI(LatLng(latitude, longitude))
+                Log.i("HomeFragment", "Received after if statement: latitude: $latitude, longitude: $longitude")
+                isLocationReceived = true
+            }
         } else {
-            Log.i("HomeFragment", "Location is not from MapActivity")
+
+            val isLocationFromMapActivity = arguments?.getBoolean("isLocationFromMapActivity") ?: false
+
+            if (isLocationFromMapActivity) {
+                Log.i("HomeFragment", "Location is from MapActivity")
+            } else {
+                Log.i("HomeFragment", "Location is not from MapActivity")
+                val locationDialogShown = sharedPreferences.getBoolean(LOCATION_DIALOG_SHOWN, false)
+                Log.i("HomeFragment", "Location dialog shown: $locationDialogShown")
+                if (!locationDialogShown) {
+                    showLocationDialog()
+                    sharedPreferences.edit().putBoolean(LOCATION_DIALOG_SHOWN, true).apply()
+                    sharedPreferences.edit().putString("Location_Method", "Use GPS").apply()
+                    Log.i("TAG", "onViewCreated: Dialog")
+                } else {
+                    val locationMethod = sharedPreferences.getString("Location_Method", "Use GPS")
+                    handleLocationMethod(locationMethod)
+                    Log.i("TAG", "onViewCreated: not Dialog")
+                }
+            }
         }
-        Log.i("HomeFragment", "Latitude: $currentLatitude, Longitude: $currentLongitude")
     }
-
-
 
     private fun showLocationDialog() {
         val items = arrayOf("Use GPS", "Open Map")
@@ -136,9 +165,10 @@ class HomeFragment : Fragment() {
 
     private fun openMap() {
         var tye = "Home"
-        var action :HomeFragmentDirections.ActionHomeFragmentToMapFragment = HomeFragmentDirections.actionHomeFragmentToMapFragment().apply {
+        var action :HomeFragmentDirections.ActionHomeFragmentToMapFragment =
+            HomeFragmentDirections.actionHomeFragmentToMapFragment().apply {
             type = tye
-        }
+            }
         Navigation.findNavController(requireView()).navigate(action)
     }
 
@@ -150,33 +180,7 @@ class HomeFragment : Fragment() {
                 currentLongitude = lastLocation.longitude
 
                 Log.i("HomeFragment", "Latitude: $currentLatitude, Longitude: $currentLongitude")
-                /*lifecycleScope.launch {
-                    viewModel.weather.collectLatest { viewStateResult ->
-                        when (viewStateResult) {
-                            is ResponseState.Success -> {
-                                val weatherResponse = viewStateResult.data
-                                val currentWeather = weatherResponse.current
 
-                                binding.currentWeatherLocation.text = "${weatherResponse.timezone}"
-                                binding.currentWeatherTemperature.text = "${currentWeather.temp} °K"
-                                binding.currentWeatherDescription.text = "${currentWeather.weather.firstOrNull()?.description}"
-                                val weatherIcon = currentWeather.weather.firstOrNull()?.description.toString()
-                                binding.currentWeatherImageView.setImageResource(getWeatherIcon(weatherIcon))
-
-                                val dailyWeather = weatherResponse.daily
-                                val convertedDailyWeather = convertToDailyWeather(dailyWeather)
-                                dayAdapter.submitList(convertedDailyWeather)
-                            }
-
-                            is ResponseState.Loading -> {
-                            }
-
-                            else -> {
-                                Log.i("TAG", "onViewCreated: Something went wrong.")
-                            }
-                        }
-                    }
-                }*/
                 setUpUI(LatLng(lastLocation.latitude,lastLocation.longitude))
                 isLocationReceived = true
                 fusedLocationProviderClient.removeLocationUpdates(this)
@@ -216,14 +220,15 @@ class HomeFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
+
         val argsLatLng =  HomeFragmentArgs.fromBundle(requireArguments()).latLang
-        if (argsLatLng != null)
-        {
-            setUpUI(LatLng(argsLatLng.lat,argsLatLng.lng))
+        if (argsLatLng != null) {
+            setUpUI(LatLng(argsLatLng.lat, argsLatLng.lng))
             Log.i("TAG", "onResume: ================")
-        }else{
+        } else {
             val locationDialogShown = sharedPreferences.getBoolean(LOCATION_DIALOG_SHOWN, false)
             Log.i("HomeFragment", "Location dialog shown: $locationDialogShown")
+
             if (!locationDialogShown) {
                 showLocationDialog()
                 sharedPreferences.edit().putBoolean(LOCATION_DIALOG_SHOWN, true).apply()

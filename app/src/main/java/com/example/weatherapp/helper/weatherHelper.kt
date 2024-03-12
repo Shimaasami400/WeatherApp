@@ -4,7 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 
-fun getAddressEnglish(context: Context, lat: Double?, lon: Double?):String{
+fun getAddress(context: Context, lat: Double?, lon: Double?):String{
     var address:MutableList<Address>?
     val geocoder= Geocoder(context)
     address =geocoder.getFromLocation(lat!!,lon!!,1)

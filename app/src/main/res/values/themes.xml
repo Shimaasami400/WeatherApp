@@ -12,10 +12,21 @@
     <style name="CustomToolbarTitle" parent="@android:style/TextAppearance">
         <item name="android:fontFamily">casual</item>
         <item name="android:textSize">24sp</item>
+
     </style>
 
-    <style name="MenuTextStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
+    <style name="MenuIconStyle">
         <item name="android:fontFamily">casual</item>
+        <item name="android:tint">@color/purple</item>
+        <item name="android:textSize">20sp</item>
+
+    </style>
+
+
+    <style name="RoundedFab" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+        <item name="android:padding">12dp</item>
     </style>
 
 </resources>

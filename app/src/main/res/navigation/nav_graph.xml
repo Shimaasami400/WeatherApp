@@ -17,12 +17,24 @@
             app:argType="com.example.weatherapp.model.LocationLatLngPojo"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="fav_location"
+            app:argType="com.example.weatherapp.model.LocationLatLngPojo"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.example.weatherapp.favorite.view.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_favoriteFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/alertsFragment2"
         android:name="com.example.weatherapp.AlertsFragment"
@@ -47,6 +59,12 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="favorite"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
 
     </fragment>
+
 </navigation>

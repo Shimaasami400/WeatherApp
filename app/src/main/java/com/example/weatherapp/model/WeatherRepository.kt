@@ -7,5 +7,4 @@ interface WeatherRepository {
           longitude: Double,
      ): Flow<WeatherResponse>
 
-      //fun getCurrentWeather(): Flow<List<WeatherResponse>>
 }

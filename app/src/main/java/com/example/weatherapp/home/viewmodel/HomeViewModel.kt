@@ -31,29 +31,8 @@ class HomeViewModel (private val repository: WeatherRepository): ViewModel() {
                     _weather.value = ResponseState.Success(data)
                     Log.i("TAG", "Weather data received: $data")
                 }
-           /* repository.getWeatherForecast(latitude, longitude)
-                .catch { errorMsg ->
-                    _weather.value = ResponseState.Error(errorMsg)
-                }
-                .collect { list ->
-                    _weather.value = ResponseState.Success(list)
-                }*/
-            /*val weather = repository.getWeatherForecast(latitude, longitude)
-            withContext(Dispatchers.Main) {
-                _weather.value = weather
-                _currentWeather.value = weather*/
             Log.i("TAG", "fetchWeatherForecast: $weather")
         }
     }
-
-
-    /* fun getCurrentWeather() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val currentWeather = repository.getCurrentWeather()
-            withContext(Dispatchers.Main) {
-                _currentWeather.value = currentWeather
-            }
-        }
-    }*/
 
 }

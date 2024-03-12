@@ -2,7 +2,7 @@ package com.example.weatherapp.network
 
 import com.example.weatherapp.model.WeatherResponse
 
-class WeatherRemoteDataSourceImp private constructor():WeatherRemoteDataSource{
+class WeatherRemoteDataSourceImp private constructor(weatherApiService: WeatherApiService):WeatherRemoteDataSource{
 
     override suspend fun getOneCallResponse(
         lat: Double?,
@@ -18,11 +18,10 @@ class WeatherRemoteDataSourceImp private constructor():WeatherRemoteDataSource{
 
     companion object {
         private var instance: WeatherRemoteDataSourceImp? = null
-        fun getInstance(): WeatherRemoteDataSourceImp {
+        fun getInstance(weatherApiService: WeatherApiService): WeatherRemoteDataSourceImp {
             return instance?: synchronized(this){
-                val temp = WeatherRemoteDataSourceImp()
-                instance = temp
-                temp
+                instance ?: WeatherRemoteDataSourceImp(weatherApiService)
+                    .also { instance = it }
             }
         }
     }

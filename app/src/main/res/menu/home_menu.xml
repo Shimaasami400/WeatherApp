@@ -5,21 +5,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/home"
-        android:title="@string/home"
-        android:textAppearance="@style/MenuTextStyle" />
+        android:textAppearance="@style/MenuIconStyle"
+        android:title="@string/Home" />
     <item
         android:id="@+id/favoriteFragment"
         android:icon="@drawable/heart"
         android:title="@string/fav"
-        android:textAppearance="@style/MenuTextStyle" />
+        android:textAppearance="@style/MenuIconStyle" />
     <item
         android:id="@+id/alertsFragment2"
         android:icon="@drawable/alert"
         android:title="@string/alert"
-        android:textAppearance="@style/MenuTextStyle" />
+        android:textAppearance="@style/MenuIconStyle" />
     <item
         android:id="@+id/settingFragment"
         android:icon="@drawable/setting"
         android:title="@string/setting"
-        android:textAppearance="@style/MenuTextStyle" />
+        android:textAppearance="@style/MenuIconStyle" />
 </menu>
