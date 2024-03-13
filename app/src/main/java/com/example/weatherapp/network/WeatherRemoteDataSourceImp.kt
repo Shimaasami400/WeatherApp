@@ -7,9 +7,11 @@ class WeatherRemoteDataSourceImp private constructor(weatherApiService: WeatherA
     override suspend fun getOneCallResponse(
         lat: Double?,
         lon: Double?,
+        language: String,
+        units: String?,
 
     ): WeatherResponse {
-        return apiService.getWeatherForecast(lat,lon)
+        return apiService.getWeatherForecast(lat,lon,language,units)
     }
 
     val apiService: WeatherApiService by lazy {

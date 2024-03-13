@@ -8,5 +8,7 @@ interface WeatherRemoteDataSource {
     suspend fun getOneCallResponse(
         lat: Double?,
         lon: Double?,
+        language: String,
+        units: String?
     ): WeatherResponse
 }

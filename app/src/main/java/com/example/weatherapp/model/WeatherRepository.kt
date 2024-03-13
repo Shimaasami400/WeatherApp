@@ -5,6 +5,8 @@ interface WeatherRepository {
      suspend fun getWeatherForecast(
           latitude: Double,
           longitude: Double,
+          language: String,
+          units: String?,
      ): Flow<WeatherResponse>
 
 }

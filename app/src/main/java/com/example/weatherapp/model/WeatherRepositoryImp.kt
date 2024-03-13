@@ -20,9 +20,11 @@ class WeatherRepositoryImp (
     override suspend fun getWeatherForecast(
         latitude: Double,
         longitude: Double,
+        language: String,
+        units: String?,
 
     ) : Flow<WeatherResponse> {
-        return flowOf(remoteDataSource.getOneCallResponse(latitude, longitude))
+        return flowOf(remoteDataSource.getOneCallResponse(latitude, longitude,language,units))
     }
 
 

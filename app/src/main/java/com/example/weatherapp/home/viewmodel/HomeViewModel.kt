@@ -23,9 +23,9 @@ class HomeViewModel (private val repository: WeatherRepository): ViewModel() {
     private val _currentWeather = MutableLiveData<WeatherResponse>()
     val currentWeather: LiveData<WeatherResponse> = _currentWeather
 
-    fun getWeatherResponse(latitude: Double, longitude: Double) {
+    fun getWeatherResponse(latitude: Double, longitude: Double,language: String,units: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getWeatherForecast(latitude, longitude)
+            repository.getWeatherForecast(latitude, longitude,language,units)
                 ?.catch { e -> _weather.value = ResponseState.Error(e) }
                 ?.collect { data ->
                     _weather.value = ResponseState.Success(data)

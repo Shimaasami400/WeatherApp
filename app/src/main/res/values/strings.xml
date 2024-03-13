@@ -9,4 +9,17 @@
     <string name="setting">Settings</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="Home">Home</string>
+    <string name="english">English</string>
+    <string name="arabic">Arabic</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map</string>
+    <string name="celsius">Celsius</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="weather">Weather</string>
+    <string name="subtitle">Your Daily Journey Into Weather Condition</string>
+    <string name="notification">Notifications</string>
+    <string name="langauge">Language</string>
+    <string name="temperature">Temperature</string>
+    <string name="location">Location</string>
 </resources>

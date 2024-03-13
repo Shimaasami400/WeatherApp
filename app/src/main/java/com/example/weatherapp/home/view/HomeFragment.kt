@@ -25,11 +25,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weatherapp.Constants
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentHomeBinding
 import com.example.weatherapp.db.DatabaseClient
 import com.example.weatherapp.db.WeatherLocalDataSource
 import com.example.weatherapp.db.WeatherLocalDataSourceImp
+import com.example.weatherapp.helper.getAddress
 import com.example.weatherapp.home.viewmodel.HomeViewModel
 import com.example.weatherapp.home.viewmodel.HomeViewModelFactory
 import com.example.weatherapp.map.view.MapActivity
@@ -60,6 +62,10 @@ class HomeFragment : Fragment() {
     private var isLocationReceived = false
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferencesSettings: SharedPreferences
+
+    private lateinit var selectedLanguage: String
+    private lateinit var selectedUnit: String
 
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
@@ -86,6 +92,21 @@ class HomeFragment : Fragment() {
 
         sharedPreferences = requireContext().getSharedPreferences("LocationUsedMethod", Context.MODE_PRIVATE)
 
+        sharedPreferencesSettings = requireActivity().getSharedPreferences(
+            Constants.SHARED_PREFERENCE_NAME,
+            Context.MODE_PRIVATE
+        )
+
+        selectedLanguage = sharedPreferencesSettings.getString(
+            Constants.LANGUAGE_KEY,
+            Constants.Enum_lANGUAGE.en.toString()
+        ).toString()
+
+        selectedUnit = sharedPreferencesSettings.getString(
+            Constants.UNITS_KEY,
+            Constants.ENUM_UNITS.metric.toString()
+        ).toString()
+
         binding.dailyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.dailyRecyclerView.adapter = dayAdapter
 
@@ -99,7 +120,7 @@ class HomeFragment : Fragment() {
 
         if (latitude != null && longitude != null) {
             if (!isLocationReceived) {
-                setUpUI(LatLng(latitude, longitude))
+                setUpUI(LatLng(latitude, longitude),selectedLanguage,selectedUnit)
                 Log.i("HomeFragment", "Received after if statement: latitude: $latitude, longitude: $longitude")
                 isLocationReceived = true
             }
@@ -181,15 +202,18 @@ class HomeFragment : Fragment() {
 
                 Log.i("HomeFragment", "Latitude: $currentLatitude, Longitude: $currentLongitude")
 
-                setUpUI(LatLng(lastLocation.latitude,lastLocation.longitude))
+                setUpUI(LatLng(lastLocation.latitude,lastLocation.longitude),selectedLanguage,selectedUnit)
                 isLocationReceived = true
                 fusedLocationProviderClient.removeLocationUpdates(this)
             }
         }
     }
 
-    fun setUpUI(latLang :LatLng){
-        viewModel.getWeatherResponse(latLang.latitude, latLang.longitude)
+    fun setUpUI(latLang :LatLng,language: String,units: String){
+        val address = getAddress(requireContext(), latLang.latitude, latLang.longitude)
+        binding.currentWeatherLocation.text = address
+
+        viewModel.getWeatherResponse(latLang.latitude, latLang.longitude,language,units)
         lifecycleScope.launch {
             viewModel.weather.collectLatest { viewStateResult ->
                 when (viewStateResult) {
@@ -197,8 +221,31 @@ class HomeFragment : Fragment() {
                         val weatherResponse = viewStateResult.data
                         val currentWeather = weatherResponse.current
 
-                        binding.currentWeatherLocation.text = "${weatherResponse.timezone}"
-                        binding.currentWeatherTemperature.text = "${currentWeather.temp} °K"
+
+                        val temperatureUnit = when (language) {
+                            Constants.Enum_lANGUAGE.ar.toString() -> {
+                                when (units) {
+                                    Constants.ENUM_UNITS.metric.toString() -> "°س"
+                                    Constants.ENUM_UNITS.imperial.toString() -> "°ف"
+                                    Constants.ENUM_UNITS.standard.toString() -> "ك"
+                                    else -> "°س"
+                                }
+                            }
+                            else -> {
+                                when (units) {
+                                    Constants.ENUM_UNITS.metric.toString() -> "°C"
+                                    Constants.ENUM_UNITS.imperial.toString() -> "°F"
+                                    Constants.ENUM_UNITS.standard.toString() -> "K"
+                                    else -> "°C"
+                                }
+                            }
+                        }
+                        val temperatureValue = if (language == Constants.Enum_lANGUAGE.ar.toString()) {
+                            currentWeather.temp.toString().toArabicNumerals()
+                        } else {
+                            currentWeather.temp.toString()
+                        }
+                        binding.currentWeatherTemperature.text = "$temperatureValue $temperatureUnit"
                         binding.currentWeatherDescription.text = "${currentWeather.weather.firstOrNull()?.description}"
                         val weatherIcon = currentWeather.weather.firstOrNull()?.description.toString()
                         binding.currentWeatherImageView.setImageResource(getWeatherIcon(weatherIcon))
@@ -223,7 +270,7 @@ class HomeFragment : Fragment() {
 
         val argsLatLng =  HomeFragmentArgs.fromBundle(requireArguments()).latLang
         if (argsLatLng != null) {
-            setUpUI(LatLng(argsLatLng.lat, argsLatLng.lng))
+            setUpUI(LatLng(argsLatLng.lat, argsLatLng.lng),selectedLanguage,selectedUnit)
             Log.i("TAG", "onResume: ================")
         } else {
             val locationDialogShown = sharedPreferences.getBoolean(LOCATION_DIALOG_SHOWN, false)
@@ -340,5 +387,15 @@ class HomeFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    fun String.toArabicNumerals(): String {
+        val englishDigits = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+        val arabicDigits = arrayOf("٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩")
+        var result = this
+        for (i in englishDigits.indices) {
+            result = result.replace(englishDigits[i], arabicDigits[i])
+        }
+        return result
     }
 }
