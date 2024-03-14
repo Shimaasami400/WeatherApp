@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -67,6 +68,10 @@ class HomeFragment : Fragment() {
     private lateinit var selectedLanguage: String
     private lateinit var selectedUnit: String
 
+    private val dayAdapter = DayAdapter()
+    private var currentLatitude: Double = 0.0
+    private var currentLongitude: Double = 0.0
+
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
             WeatherRepositoryImp.getInstance(
@@ -75,9 +80,6 @@ class HomeFragment : Fragment() {
             )
         )
     }
-    private val dayAdapter = DayAdapter()
-    private var currentLatitude: Double = 0.0
-    private var currentLongitude: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -188,7 +190,7 @@ class HomeFragment : Fragment() {
         var tye = "Home"
         var action :HomeFragmentDirections.ActionHomeFragmentToMapFragment =
             HomeFragmentDirections.actionHomeFragmentToMapFragment().apply {
-            type = tye
+                type = tye
             }
         Navigation.findNavController(requireView()).navigate(action)
     }
@@ -398,4 +400,14 @@ class HomeFragment : Fragment() {
         }
         return result
     }
+
+    fun isConnected(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!
+            .isConnected
+    }
 }
+
+
+

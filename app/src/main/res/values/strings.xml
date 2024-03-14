@@ -22,4 +22,5 @@
     <string name="langauge">Language</string>
     <string name="temperature">Temperature</string>
     <string name="location">Location</string>
+    <string name="checkInternet">You\'re offline, Check Internet Connection</string>
 </resources>

@@ -12,15 +12,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.example.weatherapp.Constants
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentSettingBinding
+import com.example.weatherapp.home.view.HomeFragmentDirections
 import java.util.Locale
 
 class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var locationSharedPreferences: SharedPreferences
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +36,10 @@ class SettingFragment : Fragment() {
             Constants.SHARED_PREFERENCE_NAME,
             Context.MODE_PRIVATE
         )
+        locationSharedPreferences = requireActivity().getSharedPreferences(
+            "LocationUsedMethod",
+            Context.MODE_PRIVATE)
+
         setupUI()
         return binding.root
     }
@@ -95,6 +103,35 @@ class SettingFragment : Fragment() {
                 }
             }
         }
+
+        binding.locationRadioGroup.setOnCheckedChangeListener{group, checkedId ->
+            val locationRadioGroup: RadioButton = binding.root.findViewById(checkedId) as RadioButton
+            when (locationRadioGroup.text) {
+
+                getString(R.string.gps) -> {
+                    locationSharedPreferences.edit()
+                        .putString(
+                            "LocationUsedMethod",
+                            Constants.ENUM_LOCATION.gps.toString()
+                        ).apply()
+                }
+
+                getString(R.string.map) -> {
+                    locationSharedPreferences.edit()
+                        .putString(
+                            "LocationUsedMethod",
+                            Constants.ENUM_LOCATION.map.toString()
+                        ).apply()
+                    var tye = "Setting"
+                    var action : SettingFragmentDirections.ActionSettingFragmentToMapFragment =
+                        SettingFragmentDirections.actionSettingFragmentToMapFragment().apply {
+                            type = tye
+                        }
+                    Navigation.findNavController(requireView()).navigate(action)
+
+                }
+            }
+        }
     }
 
 
@@ -115,11 +152,17 @@ private fun setupUI() {
         Constants.ENUM_UNITS.metric.toString()
     )
 
+    var location = locationSharedPreferences.getString(
+        "LocationUsedMethod",
+        Constants.ENUM_LOCATION.gps.toString()
+    )
+
     if (lang == Constants.Enum_lANGUAGE.en.toString()) {
         binding.languageRadioGroup.check(binding.radioButton2Language.id)
     } else {
         binding.languageRadioGroup.check(binding.radioButton1Language.id)
     }
+    //==================
 
     if (unit == Constants.ENUM_UNITS.standard.toString()){
         binding.temperatureRadioGroup.check(binding.radioButton3Temperature.id)}
@@ -129,6 +172,15 @@ private fun setupUI() {
 
     else{
         binding.temperatureRadioGroup.check(binding.radioButton1Temperature.id)}
+    //-----------------------
+
+    if (location == Constants.ENUM_LOCATION.gps.toString()) {
+        binding.locationRadioGroup.check(binding.radioButton1Location.id)
+    } else {
+        binding.locationRadioGroup.check(binding.radioButton2Location.id)
+    }
+
+
 }
 }
 
