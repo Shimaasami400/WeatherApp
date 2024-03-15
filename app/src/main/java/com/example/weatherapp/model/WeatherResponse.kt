@@ -11,20 +11,20 @@ data class WeatherResponse(
 )
 
 data class Current(
-	val sunrise: Long,
+	val sunrise: Int,
 	val temp: Double,
 	val visibility: Int,
-	val uvi: Double,
+	val uvi: Int,
 	val pressure: Int,
 	val clouds: Int,
 	val feelsLike: Double,
 	val dt: Long,
 	val windDeg: Int,
 	val dewPoint: Double,
-	val sunset: Long,
+	val sunset: Int,
 	val weather: List<WeatherItem>,
 	val humidity: Int,
-	val windSpeed: Double
+	val windSpeed: Int
 )
 
 data class FeelsLike(

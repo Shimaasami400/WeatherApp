@@ -52,6 +52,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 const val PERMISSION_ID = 1001
 const val LOCATION_DIALOG_SHOWN = "locationDialogShown"
@@ -69,6 +70,7 @@ class HomeFragment : Fragment() {
     private lateinit var selectedUnit: String
 
     private val dayAdapter = DayAdapter()
+    private var hourAdapter = HourAdapter()
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
 
@@ -111,6 +113,9 @@ class HomeFragment : Fragment() {
 
         binding.dailyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.dailyRecyclerView.adapter = dayAdapter
+
+        binding.recyclerViewForTime.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+        binding.recyclerViewForTime.adapter = hourAdapter
 
         locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -212,6 +217,7 @@ class HomeFragment : Fragment() {
     }
 
     fun setUpUI(latLang :LatLng,language: String,units: String){
+
         val address = getAddress(requireContext(), latLang.latitude, latLang.longitude)
         binding.currentWeatherLocation.text = address
 
@@ -242,6 +248,8 @@ class HomeFragment : Fragment() {
                                 }
                             }
                         }
+
+
                         val temperatureValue = if (language == Constants.Enum_lANGUAGE.ar.toString()) {
                             currentWeather.temp.toString().toArabicNumerals()
                         } else {
@@ -249,17 +257,29 @@ class HomeFragment : Fragment() {
                         }
                         binding.currentWeatherTemperature.text = "$temperatureValue $temperatureUnit"
                         binding.currentWeatherDescription.text = "${currentWeather.weather.firstOrNull()?.description}"
+
+                        binding.txtHumidityValue.text = currentWeather.humidity.toString()
+                        binding.txtSunriseValue.text = currentWeather.sunrise.toString()
+                        binding.txtSunsetValue.text = currentWeather.sunset.toString()
+                        binding.txtUviValue.text = currentWeather.uvi.toString()
+                        binding.txtWindValue.text = currentWeather.windSpeed.toString()
+                        binding.txtTemperatureValue.text = currentWeather.pressure.toString()
+
                         val weatherIcon = currentWeather.weather.firstOrNull()?.description.toString()
                         binding.currentWeatherImageView.setImageResource(getWeatherIcon(weatherIcon))
 
                         val dailyWeather = weatherResponse.daily
-                        val convertedDailyWeather = convertToDailyWeather(dailyWeather)
-                        dayAdapter.submitList(convertedDailyWeather)
-                    }
+                        val hourlyWeather = weatherResponse.hourly
 
+                        val convertedDailyWeather = convertToDailyWeather(dailyWeather)
+                        val convertHourlyWeather = convertToHourlyWeather(hourlyWeather)
+                        dayAdapter.submitList(convertedDailyWeather)
+                        hourAdapter.submitList(convertHourlyWeather)
+
+
+                    }
                     is ResponseState.Loading -> {
                     }
-
                     else -> {
                         Log.i("TAG", "onViewCreated: Something went wrong.")
                     }
@@ -363,7 +383,6 @@ class HomeFragment : Fragment() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
-
     private fun getWeatherIcon(weatherDescription: String): Int {
         return when (weatherDescription.toLowerCase()) {
             "sunny" -> R.drawable.sunny
@@ -378,7 +397,6 @@ class HomeFragment : Fragment() {
             else -> R.drawable.clear_sky
         }
     }
-
     companion object {
         fun newInstance(latitude: Double, longitude: Double, isLocationFromMapActivity: Boolean): HomeFragment {
             val fragment = HomeFragment()
@@ -390,7 +408,6 @@ class HomeFragment : Fragment() {
             return fragment
         }
     }
-
     fun String.toArabicNumerals(): String {
         val englishDigits = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
         val arabicDigits = arrayOf("٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩")
@@ -408,6 +425,5 @@ class HomeFragment : Fragment() {
             .isConnected
     }
 }
-
 
 
