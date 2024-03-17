@@ -18,7 +18,6 @@ import com.example.weatherapp.db.DatabaseClient
 import com.example.weatherapp.db.WeatherLocalDataSourceImp
 import com.example.weatherapp.favorite.viewmodel.FavoriteViewModel
 import com.example.weatherapp.favorite.viewmodel.FavoriteWeatherViewModelFactory
-import com.example.weatherapp.helper.getAddress
 import com.example.weatherapp.model.FavoriteWeather
 import com.example.weatherapp.model.WeatherRepositoryImp
 import com.example.weatherapp.network.RetrofitHelper
@@ -36,7 +35,7 @@ class FavoriteFragment : Fragment() {
         FavoriteWeatherViewModelFactory(
             WeatherRepositoryImp.getInstance(
                 WeatherRemoteDataSourceImp.getInstance(RetrofitHelper.weatherApiService),
-                WeatherLocalDataSourceImp.getInstance(DatabaseClient.getInstance(requireContext()).favoriteWeather())
+                WeatherLocalDataSourceImp.getInstance(DatabaseClient.getInstance(requireContext()).weatherDataBaseDao())
             )
         )
     }

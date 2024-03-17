@@ -23,4 +23,14 @@
     <string name="temperature">Temperature</string>
     <string name="location">Location</string>
     <string name="checkInternet">You\'re offline, Check Internet Connection</string>
+    <string name="ask_del_fav">Are You sure , you want to delete it?</string>
+    <string name="del_item">Delete</string>
+    <string name="notification_permission_title">Allow\n</string>
+    <string name="notification_permmission_desc">Body\n</string>
+    <string name="permission_request">Accept</string>
+    <string name="dismiss">Refuse</string>
+    <string name="some_thing_want_rong">Something went wrong\n</string>
+    <string name="notification_permission">Allow Access \n</string>
+    <string name="notification_permmission_body">Please grant permission to access the app settings</string>
+    <string name="add">ADD</string>
 </resources>

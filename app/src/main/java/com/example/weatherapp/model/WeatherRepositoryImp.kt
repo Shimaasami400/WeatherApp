@@ -1,21 +1,16 @@
 package com.example.weatherapp.model
 
 
-import android.util.Log
 import com.example.weatherapp.db.WeatherLocalDataSource
-import com.example.weatherapp.db.WeatherLocalDataSourceImp
 import com.example.weatherapp.network.WeatherRemoteDataSource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
 
 class WeatherRepositoryImp (
     private val remoteDataSource: WeatherRemoteDataSource,
     private val localDataSource: WeatherLocalDataSource
 
-):WeatherRepository , WeatherLocalDataSource{
+):WeatherRepository {
 
     override suspend fun getWeatherForecast(
         latitude: Double,
@@ -48,6 +43,22 @@ class WeatherRepositoryImp (
 
     override suspend fun deleteWeather(favoriteWeather: FavoriteWeather) {
         localDataSource.deleteWeather(favoriteWeather)
+    }
+
+    override fun getAllAlerts(): Flow<List<AlertPojo>> {
+        return localDataSource.getAllAlerts()
+    }
+
+    override suspend fun insertAlert(alert: AlertPojo) {
+       localDataSource.insertAlert(alert)
+    }
+
+    override suspend fun deleteAlert(alert: AlertPojo) {
+        localDataSource.deleteAlert(alert)
+    }
+
+    override fun getAlertWithId(id: String): AlertPojo {
+        return localDataSource.getAlertWithId(id)
     }
 
 }

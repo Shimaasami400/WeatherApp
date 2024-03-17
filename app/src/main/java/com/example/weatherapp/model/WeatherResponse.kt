@@ -14,7 +14,7 @@ data class Current(
 	val sunrise: Int,
 	val temp: Double,
 	val visibility: Int,
-	val uvi: Int,
+	val uvi: Float,
 	val pressure: Int,
 	val clouds: Int,
 	val feelsLike: Double,

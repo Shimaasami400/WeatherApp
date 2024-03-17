@@ -31,24 +31,35 @@ class HourAdapter : ListAdapter<HourlyWeather, HourAdapter.HourViewHolder>(DiffC
             binding.apply {
                 txtHour.text = "${hourlyWeather.hour} ${hourlyWeather.amPm}"
                 txtTemperature.text = hourlyWeather.temperature.toString()
-                //weatherImage.setImageResource(getWeatherIcon(dailyWeather.weatherDescription))
+                weatherImage.setImageResource(getWeatherIcon(hourlyWeather.icon))
 
             }
         }
 
-        private fun getWeatherIcon(weatherDescription: String): Int {
-            return when (weatherDescription.toLowerCase()) {
-                "sunny" -> R.drawable.sunny
-                "thunderstorm" -> R.drawable.storm
-                "few clouds" -> R.drawable.cloudy
-                "scattered clouds" -> R.drawable.cloudy
-                "broken clouds" -> R.drawable.cloudy
-                "light rain" -> R.drawable.rain
-                "moderate rain" -> R.drawable.rain
-                "snow" -> R.drawable.snow
-                "mist" -> R.drawable.mist
-                else -> R.drawable.clear_sky
+        private fun getWeatherIcon(icon: String): Int {
+            val iconValue: Int
+            when (icon) {
+                "01d" -> iconValue = R.drawable.clear_sky
+                "01n" -> iconValue = R.drawable.clear_sky
+                "02d" -> iconValue = R.drawable.cloudy
+                "02n" -> iconValue = R.drawable.cloudy
+                "03n" -> iconValue = R.drawable.cloudy
+                "03d" -> iconValue = R.drawable.cloudy
+                "04d" -> iconValue = R.drawable.cloudy
+                "04n" -> iconValue = R.drawable.cloudy
+                "09d" -> iconValue = R.drawable.rain
+                "09n" -> iconValue = R.drawable.rain
+                "10d" -> iconValue = R.drawable.rain
+                "10n" -> iconValue = R.drawable.rain
+                "11d" -> iconValue = R.drawable.storm
+                "11n" -> iconValue = R.drawable.storm
+                "13d" -> iconValue = R.drawable.snow
+                "13n" -> iconValue = R.drawable.snow
+                "50d" -> iconValue = R.drawable.mist
+                "50n" -> iconValue = R.drawable.mist
+                else -> iconValue = R.drawable.header
             }
+            return iconValue
         }
     }
 

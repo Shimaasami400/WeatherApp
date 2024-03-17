@@ -37,9 +37,18 @@
     </fragment>
     <fragment
         android:id="@+id/alertsFragment2"
-        android:name="com.example.weatherapp.alert.AlertsFragment"
+        android:name="com.example.weatherapp.alert.view.AlertsFragment"
         android:label="fragment_alerts"
-        tools:layout="@layout/fragment_alerts" />
+        tools:layout="@layout/fragment_alerts" >
+        <action
+            android:id="@+id/action_alertsFragment2_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <argument
+            android:name="latlon"
+            app:argType="com.example.weatherapp.model.LocationLatLngPojo"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.weatherapp.setting.view.SettingFragment"
@@ -68,6 +77,9 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />
+        <action
+            android:id="@+id/action_mapFragment_to_alertsFragment2"
+            app:destination="@id/alertsFragment2" />
 
     </fragment>
 

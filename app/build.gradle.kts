@@ -156,4 +156,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion")
     androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
     androidTestImplementation ("androidx.arch.core:core-testing:$archTestingVersion")
+
+    // worker
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
 }

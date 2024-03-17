@@ -1,8 +1,7 @@
 package com.example.weatherapp.db
 
-import androidx.core.content.ContentProviderCompat.requireContext
+import com.example.weatherapp.model.AlertPojo
 import com.example.weatherapp.model.FavoriteWeather
-import com.example.weatherapp.network.WeatherRemoteDataSourceImp
 import kotlinx.coroutines.flow.Flow
 
 class WeatherLocalDataSourceImp (private val weatherDao: WeatherDao) : WeatherLocalDataSource {
@@ -28,6 +27,22 @@ class WeatherLocalDataSourceImp (private val weatherDao: WeatherDao) : WeatherLo
 
     override suspend fun deleteWeather(favoriteItem: FavoriteWeather) {
         weatherDao.deleteWeather(favoriteItem)
+    }
+
+    override fun getAllAlerts(): Flow<List<AlertPojo>> {
+        return weatherDao.getAllAlerts()
+    }
+
+    override suspend fun insertAlert(alert: AlertPojo) {
+        weatherDao.insertAlert(alert)
+    }
+
+    override suspend fun deleteAlert(alert: AlertPojo) {
+        weatherDao.deleteAlert(alert)
+    }
+
+    override fun getAlertWithId(id: String): AlertPojo {
+       return weatherDao.getAlertWithId(id)
     }
 
 }

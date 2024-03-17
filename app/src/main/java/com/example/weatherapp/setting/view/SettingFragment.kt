@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +38,7 @@ class SettingFragment : Fragment() {
             Context.MODE_PRIVATE
         )
         locationSharedPreferences = requireActivity().getSharedPreferences(
-            "LocationUsedMethod",
+            Constants.LOCATION_SHARED_PREFERENCE,
             Context.MODE_PRIVATE)
 
         setupUI()
@@ -111,7 +112,7 @@ class SettingFragment : Fragment() {
                 getString(R.string.gps) -> {
                     locationSharedPreferences.edit()
                         .putString(
-                            "LocationUsedMethod",
+                            Constants.LOCATION_KEY,
                             Constants.ENUM_LOCATION.gps.toString()
                         ).apply()
                 }
@@ -119,7 +120,7 @@ class SettingFragment : Fragment() {
                 getString(R.string.map) -> {
                     locationSharedPreferences.edit()
                         .putString(
-                            "LocationUsedMethod",
+                            Constants.LOCATION_KEY,
                             Constants.ENUM_LOCATION.map.toString()
                         ).apply()
                     var tye = "Setting"
@@ -133,7 +134,6 @@ class SettingFragment : Fragment() {
             }
         }
     }
-
 
 
 private fun changeLanguageLocaleTo(languageTag: String) {
@@ -153,9 +153,10 @@ private fun setupUI() {
     )
 
     var location = locationSharedPreferences.getString(
-        "LocationUsedMethod",
+        Constants.LOCATION_KEY,
         Constants.ENUM_LOCATION.gps.toString()
     )
+    Log.i("SettingFragment", "Location method selected: $location")
 
     if (lang == Constants.Enum_lANGUAGE.en.toString()) {
         binding.languageRadioGroup.check(binding.radioButton2Language.id)
