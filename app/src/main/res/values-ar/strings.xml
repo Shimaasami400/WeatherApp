@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">حاله الطقس</string>
+    <string name="hello_blank_fragment">مرحبا</string>
+    <string name="open_navigation_drawer">Open Drawer</string>
+    <string name="close_navigation_drawer">Close Drawer</string>
+    <string name="home">الرئيسيه\n</string>
+    <string name="fav">المفضله</string>
+    <string name="alert">التنبيهات\n</string>
+    <string name="setting">الإعدادات</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="Home">الرئيسيه</string>
+    <string name="english">اللغه الإنجليزيه</string>
+    <string name="arabic">اللغه العربيه</string>
+    <string name="gps">إستخدام نظام تحديد المواقع العالمى</string>
+    <string name="map">إستخدام الخريطه</string>
+    <string name="celsius">وحده السيليزيس</string>
+    <string name="fahrenheit">وحده الفهرنهايت</string>
+    <string name="kelvin">وحده كللفن</string>
+    <string name="weather">الطقس</string>
+    <string name="subtitle">وجهتك اليوميه لمعرفه الأحوال الجويه</string>
+    <string name="notification">الإشعارات</string>
+    <string name="langauge">اللغه</string>
+    <string name="temperature">درجه الحراره</string>
+    <string name="location">نظام تحديد الموقع</string>
+</resources>
